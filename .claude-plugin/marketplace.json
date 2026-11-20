@@ -1,0 +1,18 @@
+{
+  "name": "claude-marketplace",
+  "owner": {
+    "name": "evilbrettdesigns"
+  },
+  "metadata": {
+    "description": "Claude Code plugin marketplace",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "example-plugin",
+      "source": "./plugins/example-plugin",
+      "description": "An example plugin demonstrating the marketplace layout",
+      "version": "0.1.0"
+    }
+  ]
+}
