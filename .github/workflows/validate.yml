@@ -13,6 +13,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  branch-name:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Branch follows <type>/<short-description>
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          if [[ "$BRANCH" =~ ^(bug|chore|feature|hotfix|release)/[a-z0-9][a-z0-9._-]*$ || "$BRANCH" == dependabot/* ]]; then
+            echo "ok   $BRANCH"
+          else
+            echo "::error::Branch '$BRANCH' must be named <bug|chore|feature|hotfix|release>/<short-description> (lowercase kebab-case). See CLAUDE.md."
+            exit 1
+          fi
+
   manifests:
     runs-on: ubuntu-latest
     timeout-minutes: 5

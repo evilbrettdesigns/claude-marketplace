@@ -7,11 +7,14 @@ Delete any older ruleset that targets all branches first.
 
 | File | Targets | What it does |
 | --- | --- | --- |
-| `protect-main.json` | default branch only | No deletion or force-push, linear history, changes only through a squash-merged PR with resolved conversations, and the `manifests` check must pass. Admins can bypass only by merging a PR. |
+| `protect-main.json` | default branch only | No deletion or force-push, linear history, changes only through a squash-merged PR with resolved conversations, and the `manifests` and `branch-name` checks must pass. Admins can bypass only by merging a PR. |
+| `branch-names.json` | every branch except `main` and the allowed prefixes | Blocks creating any branch not named `bug/`, `chore/`, `feature/`, `hotfix/`, `release/` or `dependabot/`. No bypass, so it applies to admins and agents alike. Existing branches aren't affected. |
 | `protect-tags.json` | `v*` and `plugin@version` tags | Release tags can't be moved or deleted (admins can, if a release has to be pulled). |
 
-Feature branches, including `claude/*` and `copilot/*`, have no rules, so agents can push to
-their own PR branches. Only `main` is guarded.
+Branches under the allowed prefixes have no other rules, so contributors and agents can
+push freely to their own PR branches. Only `main` is guarded against direct pushes. The
+`branch-name` CI job checks the same pattern on every PR, which also covers PRs from forks,
+where rulesets on this repo don't apply.
 
 No approving review is required because there is one maintainer and GitHub never lets you
 approve your own PR. If a second maintainer joins, raise
