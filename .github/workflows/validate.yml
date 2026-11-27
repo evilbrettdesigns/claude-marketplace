@@ -1,0 +1,71 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  branch-name:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Branch follows <type>/<short-description>
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          if [[ "$BRANCH" =~ ^(bug|chore|feature|hotfix|release)/[a-z0-9][a-z0-9._-]*$ || "$BRANCH" == dependabot/* ]]; then
+            echo "ok   $BRANCH"
+          else
+            echo "::error::Branch '$BRANCH' must be named <bug|chore|feature|hotfix|release>/<short-description> (lowercase kebab-case). See CLAUDE.md."
+            exit 1
+          fi
+
+  manifests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: JSON manifests parse
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          status=0
+          for f in .claude-plugin/*.json plugins/*/.claude-plugin/*.json plugins/*/hooks/*.json; do
+            if jq empty "$f"; then echo "ok   $f"; else echo "FAIL $f"; status=1; fi
+          done
+          exit $status
+
+      - name: Marketplace entries point at real plugins
+        run: |
+          set -euo pipefail
+          m=.claude-plugin/marketplace.json
+          [ -f "$m" ] || { echo "no marketplace.json yet"; exit 0; }
+          status=0
+          while IFS=$'\t' read -r name src; do
+            if [ -f "$src/.claude-plugin/plugin.json" ]; then
+              echo "ok   $name -> $src"
+            else
+              echo "FAIL $name -> $src has no .claude-plugin/plugin.json"; status=1
+            fi
+          done < <(jq -r '.plugins[] | select(.source|type=="string") | [.name, .source] | @tsv' "$m")
+          exit $status
+
+      - name: No personal emails or literal tokens
+        run: |
+          set -euo pipefail
+          if grep -rnI -E '[A-Za-z0-9._%+-]+@(gmail|yahoo|hotmail|outlook|icloud)\.com|(ghp|gho|ghs|github_pat)_[A-Za-z0-9_]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|npm_[A-Za-z0-9]{36}|_authToken=[A-Za-z0-9-]{20,}' \
+               --exclude-dir=.git --exclude-dir=.github . ; then
+            echo "Found a personal email or a literal token. Remove it before merging."; exit 1
+          fi

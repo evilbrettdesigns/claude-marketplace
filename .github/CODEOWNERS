@@ -1,0 +1,7 @@
+# Every change needs the maintainer's eyes. Paths below are listed so they stay
+# owned even if the default line is ever narrowed.
+*                         @gtibrett
+/.github/                 @gtibrett
+/.claude-plugin/          @gtibrett
+/plugins/*/hooks/         @gtibrett
+/plugins/*/.claude-plugin/ @gtibrett
