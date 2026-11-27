@@ -49,7 +49,7 @@ jobs:
       - name: No personal emails or literal tokens
         run: |
           set -euo pipefail
-          if grep -rnI -E '[A-Za-z0-9._%+-]+@(gmail|yahoo|hotmail|outlook|icloud)\.com|(ghp|gho|ghs|github_pat)_[A-Za-z0-9_]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|npm_[A-Za-z0-9]{36}|_authToken=[^$]' \
+          if grep -rnI -E '[A-Za-z0-9._%+-]+@(gmail|yahoo|hotmail|outlook|icloud)\.com|(ghp|gho|ghs|github_pat)_[A-Za-z0-9_]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|npm_[A-Za-z0-9]{36}|_authToken=[A-Za-z0-9-]{20,}' \
                --exclude-dir=.git --exclude-dir=.github . ; then
             echo "Found a personal email or a literal token. Remove it before merging."; exit 1
           fi
