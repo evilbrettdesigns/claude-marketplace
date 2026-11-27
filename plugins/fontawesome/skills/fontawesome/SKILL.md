@@ -10,7 +10,7 @@ description: >
   (haiku/sonnet) so the main thread context stays free for orchestration.
 license: MIT
 metadata:
-  author: bharris
+  author: gtibrett
   version: "1.0.0"
 allowed-tools: Bash(curl:*) Read Glob Grep
 ---
