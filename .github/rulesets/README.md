@@ -16,9 +16,18 @@ push freely to their own PR branches. Only `main` is guarded against direct push
 `branch-name` CI job checks the same pattern on every PR, which also covers PRs from forks,
 where rulesets on this repo don't apply.
 
-No approving review is required because there is one maintainer and GitHub never lets you
-approve your own PR. If a second maintainer joins, raise
-`required_approving_review_count` to 1 and turn on `require_code_owner_review`.
+**Solo maintainer: no approvals.** `protect-main.json` requires a PR and green checks but
+zero approving reviews and no code-owner review, because GitHub never lets you approve
+your own PR. You merge your own PRs once `manifests` and `branch-name` pass. CODEOWNERS
+only auto-requests you as reviewer; it doesn't block anything. If a second maintainer
+joins, raise `required_approving_review_count` to 1 and turn on `require_code_owner_review`.
+
+Before importing, check that nothing live still requires an approval, or you'll be locked
+out of merging:
+- Settings → Rules → Rulesets: delete the old all-branches ruleset, and in any other ruleset
+  on `main` set "Required approvals" to 0 and untick "Require review from Code Owners".
+- Settings → Branches: if a classic branch protection rule exists for `main`, delete it
+  (the ruleset replaces it) or untick "Require approvals" there.
 
 ## Settings to set by hand
 
