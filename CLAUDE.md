@@ -11,8 +11,12 @@ MIT-licensed Claude Code plugin marketplace. Everything committed here is publis
   `release/fontawesome-1.1.0`.
 - Never use `claude/*`, `copilot/*`, session names, dates or random names. If your
   environment hands you a branch like that, create a correctly named branch and work there.
-- Never push to `main`. All changes land through a pull request, squash-merged, with the
-  `validate` checks green.
+- Never push to `main`. All changes land through a pull request with the `validate`
+  checks green. History on `main` stays linear: no merge commits.
+- Merge method: **rebase** when every commit on the branch is clean and meaningful on its
+  own (typical for the maintainer's PRs); **squash** for anything messy, including most
+  outside contributions. Before asking for a rebase merge, tidy the branch so each commit
+  passes CI and follows the commit rules below.
 - The only other allowed branch prefix is `dependabot/`, which Dependabot creates itself.
 
 ## Commits and pull requests
@@ -22,7 +26,7 @@ MIT-licensed Claude Code plugin marketplace. Everything committed here is publis
 - Commit as `gtibrett <47423+gtibrett@users.noreply.github.com>` or another noreply
   address. Never commit a personal email address.
 - One topic per PR. Keep unrelated cleanups out of feature PRs.
-- PR title matches the squash commit subject. Fill in what changed and how it was checked.
+- PR title follows the commit subject rules, since a squash merge uses it as the commit. Fill in what changed and how it was checked.
 
 ## Nothing private, nothing borrowed
 
