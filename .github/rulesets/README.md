@@ -3,11 +3,13 @@
 GitHub does not read these files automatically. They are the source of truth for the
 repo's rulesets so changes get reviewed like code. To apply one, go to
 **Settings → Rules → Rulesets → New ruleset → Import a ruleset** and pick the file.
-Delete any older ruleset that targets all branches first.
+Delete any older ruleset that targets all branches first. When a file here changes, open
+the existing ruleset in GitHub and re-import or edit it to match; importing again creates
+a second copy rather than updating the first.
 
 | File | Targets | What it does |
 | --- | --- | --- |
-| `protect-main.json` | default branch only | Applies to everyone, you included, with no bypass: no deletion or force-push, linear history, changes only through a squash-merged PR with resolved conversations, and the `manifests` and `branch-name` checks must pass. |
+| `protect-main.json` | default branch only | Applies to everyone, you included, with no bypass: no deletion or force-push, linear history, changes only through a PR (squash or rebase merge, never a merge commit) with resolved conversations, and the `manifests` and `branch-name` checks must pass. |
 | `require-review.json` | default branch only | Requires 1 approving review from a code owner (you), re-approval after new pushes. The Repository admin role bypasses it in "pull requests only" mode, so you can merge your own PRs without an approval. Everyone else needs yours. |
 | `branch-names.json` | every branch except `main` and the allowed prefixes | Blocks creating any branch not named `bug/`, `chore/`, `feature/`, `hotfix/`, `release/` or `dependabot/`. No bypass, so it applies to admins and agents alike. Existing branches aren't affected. |
 | `protect-tags.json` | `v*` and `plugin@version` tags | Release tags can't be moved or deleted (admins can, if a release has to be pulled). |
@@ -39,7 +41,10 @@ These live outside the repo, so they're listed here to be checked off before (or
 after) the repo goes public.
 
 **General**
-- Pull Requests: allow squash merging only; turn on "Always suggest updating pull request
+- Pull Requests: allow **squash merging** and **rebase merging**, and untick "Allow merge
+  commits". The rulesets only permit methods that are also enabled here, so rebase merging
+  must be on. Set the squash commit message default to "Pull request title and
+  description". Turn on "Always suggest updating pull request
   branches" and "Automatically delete head branches".
 - Features: turn off Wiki and Projects unless you use them. Keep Issues on.
 
