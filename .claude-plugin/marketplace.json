@@ -1,0 +1,18 @@
+{
+  "name": "evilbrettdesigns",
+  "owner": {
+    "name": "Evil Brett Designs"
+  },
+  "metadata": {
+    "description": "Open source Claude Code plugins from Evil Brett Designs.",
+    "version": "1.0.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "fontawesome",
+      "source": "./plugins/fontawesome",
+      "description": "FontAwesome toolkit for React — live icon search, end-to-end install (Free/Pro Kit/Pro npm), styling, stack/mask/layer compositing, tree-shake subsetting, and best-practice audits via 6 specialized subagents."
+    }
+  ]
+}
