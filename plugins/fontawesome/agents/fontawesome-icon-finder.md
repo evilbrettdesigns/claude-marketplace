@@ -57,7 +57,7 @@ Markdown table, one row per icon, ranked top-down by API order:
 Rules:
 - If icon exists in **free**, show free import. Otherwise show pro import.
 - For pro-only icons, prefix import path note with `(Pro)`.
-- For sharp/duotone, use `pro-sharp-solid-svg-icons` / `pro-duotone-svg-icons`.
+- Pick the package from the icon's family **and** style using the map below (e.g. sharp regular → `@fortawesome/sharp-regular-svg-icons`, duotone → `@fortawesome/pro-duotone-svg-icons`). Don't default to solid when the result is regular, light or thin.
 - If GraphQL returns 0 hits, output `No matches for "<query>". Try synonyms: <2-3 suggestions>.`
 - Append one-line summary: `N icons found. Top pick: <name> (why in ≤8 words).`
 

@@ -37,7 +37,7 @@ Ask the user (one question, 3 options):
 > Which FontAwesome tier? **Free** (CDN/npm, no auth) / **Pro Kit** (kit code, single pkg) / **Pro npm** (per-style packages, needs FONTAWESOME_PACKAGE_TOKEN).
 
 For **Pro Kit**, also ask for the kit code (looks like `abc12def34`).
-For **Pro npm**, check `echo $FONTAWESOME_PACKAGE_TOKEN` — if unset, instruct user to set it before continuing; do NOT install yet.
+For **Pro Kit** and **Pro npm**, check that the token is set without printing it: `[ -n "$FONTAWESOME_PACKAGE_TOKEN" ] && echo set || echo unset`. Never `echo` the variable itself, because its value would land in tool output and the conversation. If unset, instruct the user to set it before continuing; do NOT install yet.
 
 ## Install steps
 
@@ -65,12 +65,22 @@ Add icon packs the user picks (default all three):
 ### Pro npm
 1. Same `.npmrc` as above.
 2. Ask user which styles they want (default: solid + regular + brands). Offer pro-light, pro-thin, pro-duotone, sharp-solid as opt-ins.
-3. Install `@fortawesome/pro-{style}-svg-icons` packages.
+3. Install the package for each chosen style from this map (do not build names from a pattern):
+
+   | style        | package                                |
+   |--------------|----------------------------------------|
+   | solid        | `@fortawesome/pro-solid-svg-icons`     |
+   | regular      | `@fortawesome/pro-regular-svg-icons`   |
+   | light        | `@fortawesome/pro-light-svg-icons`     |
+   | thin         | `@fortawesome/pro-thin-svg-icons`      |
+   | duotone      | `@fortawesome/pro-duotone-svg-icons`   |
+   | brands       | `@fortawesome/free-brands-svg-icons`   |
+   | sharp-solid  | `@fortawesome/sharp-solid-svg-icons`   |
 
 ## Scaffolding
 
 ### Icon barrel — `src/lib/icons.ts`
-Default to **per-component imports** (tree-shake friendly). Create the barrel only if user explicitly asks for centralized library.add or has 3+ existing usages. Template (only when requested):
+Default to **per-component imports** (tree-shake friendly). Create the barrel only if user explicitly asks for centralized library.add or has 3+ existing usages. Template (only when requested). Import only from a package installed in this run: for Pro npm use the matching `pro-*` package, for Free use whichever pack the user chose (e.g. `faCircleCheck` from free-regular if solid wasn't installed), and for Pro Kit use the kit's exports (`@awesome.me/kit-<KIT_CODE>/icons/...`). The `free-solid` lines below are only an example:
 
 ```ts
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -81,12 +91,15 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 library.add(faCoffee);
 ```
 
-Then import once in the app entry (`src/main.tsx`, `src/index.tsx`, `app/layout.tsx`):
+Then import once in the app entry (`src/main.tsx`, `src/index.tsx`, `app/layout.tsx`). Compute the path relative to the entry file you edit; don't reuse one path for every framework:
 ```ts
-import './lib/icons';
+import './lib/icons';          // from src/main.tsx or src/index.tsx
+import '../src/lib/icons';     // from a root-level app/layout.tsx
 ```
+If the project has no `src/` directory, put the barrel at `lib/icons.ts` instead and adjust the import.
 
 ### Sample component — `src/components/FontAwesomeDemo.tsx`
+Same rule as the barrel: import the icon from a package installed in this run. The example assumes free-solid.
 ```tsx
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
@@ -116,7 +129,7 @@ No special CSS pinning needed; default behavior is fine.
 ## Smoke test
 
 After install:
-1. Run `<pkgmgr> run build` (or `dev` if no build script). Capture exit code.
+1. If `package.json` has a `build` script, run `<pkgmgr> run build` and capture the exit code. If it has none, skip the build and report `Smoke test: skipped (no build script)`. Never run `dev` here, because a dev server doesn't exit.
 2. If build fails, show user the last 20 lines of error output and stop. Do not "fix" by adding workarounds.
 
 ## Output contract

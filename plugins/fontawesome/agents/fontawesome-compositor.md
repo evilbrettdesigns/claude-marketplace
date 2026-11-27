@@ -7,7 +7,7 @@ description: >
   techniques work). Use for badges over icons, icon-on-shape masks, layered
   text/counter overlays, and composite glyphs. Refuses if the project is
   using webfont CSS only — those features require SVG+JS.
-tools: Read, Write, Edit
+tools: Read, Write, Edit, Grep, Glob
 model: sonnet
 ---
 
@@ -26,7 +26,7 @@ Before composing: if you suspect the project uses webfonts only, grep for `@fort
 ### Stack — two icons layered, sized 1x and 2x
 
 ```tsx
-import { FontAwesomeIcon, FontAwesomeIconStack } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faFlag } from '@fortawesome/free-solid-svg-icons';
 
 <span className="fa-stack fa-2x">
