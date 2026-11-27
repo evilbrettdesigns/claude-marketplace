@@ -7,7 +7,8 @@ Delete any older ruleset that targets all branches first.
 
 | File | Targets | What it does |
 | --- | --- | --- |
-| `protect-main.json` | default branch only | No deletion or force-push, linear history, changes only through a squash-merged PR with resolved conversations, and the `manifests` and `branch-name` checks must pass. Admins can bypass only by merging a PR. |
+| `protect-main.json` | default branch only | Applies to everyone, you included, with no bypass: no deletion or force-push, linear history, changes only through a squash-merged PR with resolved conversations, and the `manifests` and `branch-name` checks must pass. |
+| `require-review.json` | default branch only | Requires 1 approving review from a code owner (you), re-approval after new pushes. The Repository admin role bypasses it in "pull requests only" mode, so you can merge your own PRs without an approval. Everyone else needs yours. |
 | `branch-names.json` | every branch except `main` and the allowed prefixes | Blocks creating any branch not named `bug/`, `chore/`, `feature/`, `hotfix/`, `release/` or `dependabot/`. No bypass, so it applies to admins and agents alike. Existing branches aren't affected. |
 | `protect-tags.json` | `v*` and `plugin@version` tags | Release tags can't be moved or deleted (admins can, if a release has to be pulled). |
 
@@ -16,16 +17,19 @@ push freely to their own PR branches. Only `main` is guarded against direct push
 `branch-name` CI job checks the same pattern on every PR, which also covers PRs from forks,
 where rulesets on this repo don't apply.
 
-**Solo maintainer: no approvals.** `protect-main.json` requires a PR and green checks but
-zero approving reviews and no code-owner review, because GitHub never lets you approve
-your own PR. You merge your own PRs once `manifests` and `branch-name` pass. CODEOWNERS
-only auto-requests you as reviewer; it doesn't block anything. If a second maintainer
-joins, raise `required_approving_review_count` to 1 and turn on `require_code_owner_review`.
+**Approvals: everyone but you.** The rules are split in two on purpose. A bypass skips
+every rule in its ruleset, so if the admin bypass lived in `protect-main` you could also
+merge with red CI. With the split, the bypass in `require-review` only skips the approval,
+and `protect-main` still forces a PR and green checks on you too. Anyone else (forks,
+future collaborators, bots) needs your approval as code owner, and pushing after your
+approval dismisses it. Only you hold the admin role, so keep it that way: anyone you give
+admin also gets the bypass.
 
 Before importing, check that nothing live still requires an approval, or you'll be locked
 out of merging:
-- Settings → Rules → Rulesets: delete the old all-branches ruleset, and in any other ruleset
-  on `main` set "Required approvals" to 0 and untick "Require review from Code Owners".
+- Settings → Rules → Rulesets: delete the old all-branches ruleset. Any other ruleset on
+  `main` that requires approvals must also list Repository admin as a bypass in "pull
+  requests only" mode.
 - Settings → Branches: if a classic branch protection rule exists for `main`, delete it
   (the ruleset replaces it) or untick "Require approvals" there.
 
