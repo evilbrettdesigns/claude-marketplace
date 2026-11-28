@@ -1,4 +1,5 @@
 {
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "fontawesome",
   "version": "1.0.0",
   "description": "FontAwesome toolkit for React projects — icon search via live GraphQL API, end-to-end install (Free/Pro Kit/Pro npm), styling, stack/mask/layer compositing, tree-shake subsetting, and tailored best-practice audits. Skill orchestrates 6 specialized subagents (haiku/sonnet) to keep main-thread context lean.",
